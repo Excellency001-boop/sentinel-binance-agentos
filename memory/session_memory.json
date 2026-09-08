@@ -1,0 +1,17 @@
+{
+  "user_profile": {
+    "name": null,
+    "risk_profile": "Balanced",
+    "notes": "First session. No history yet."
+  },
+  "safety_mode": "ON",
+  "watchlist": ["BTC", "ETH", "BNB", "SOL", "XRP", "DOGE"],
+  "last_proposal": null,
+  "paper_trades": [],
+  "daily": {
+    "date": null,
+    "realized_pnl_pct": 0,
+    "loss_budget_used_pct": 0
+  },
+  "history_summary": []
+}

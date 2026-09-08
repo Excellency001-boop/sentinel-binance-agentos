@@ -1,0 +1,10 @@
+{
+  "quote": "USDT",
+  "symbols": ["BTC", "ETH", "BNB", "SOL", "XRP", "DOGE"],
+  "core": ["BTC", "ETH", "BNB", "SOL"],
+  "user_added": ["XRP", "DOGE"],
+  "intervals": {
+    "context": "4h",
+    "timing": "1h"
+  }
+}

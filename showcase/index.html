@@ -1,0 +1,505 @@
+<style>
+  :root {
+    --ground: #0B0E11;
+    --panel: #12161B;
+    --panel-2: #161B22;
+    --line: #1E252E;
+    --line-2: #2A333F;
+    --ink: #C7D0DA;
+    --ink-strong: #EDF2F7;
+    --muted: #6B7683;
+    --muted-2: #8A94A1;
+    --accent: #E8B93A;
+    --accent-dim: #A9861f;
+    --pass: #3FB57A;
+    --pass-bg: rgba(63,181,122,0.12);
+    --fail: #E2564D;
+    --fail-bg: rgba(226,86,77,0.12);
+    --long: #3FB57A;
+    --short: #E2564D;
+    --shadow: 0 1px 0 rgba(255,255,255,0.02) inset, 0 20px 40px -24px rgba(0,0,0,0.8);
+    --mono: ui-monospace, "SF Mono", "JetBrains Mono", "Menlo", "Consolas", monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    --maxw: 1120px;
+  }
+  :root[data-theme="light"] {
+    --ground: #F2F0EA;
+    --panel: #FBFAF7;
+    --panel-2: #F6F4EE;
+    --line: #E0DCD1;
+    --line-2: #CFC9BA;
+    --ink: #2C333B;
+    --ink-strong: #14181D;
+    --muted: #79776E;
+    --muted-2: #5D5B53;
+    --accent: #B5860B;
+    --accent-dim: #8a6708;
+    --pass: #1F8A55;
+    --pass-bg: rgba(31,138,85,0.10);
+    --fail: #C43A31;
+    --fail-bg: rgba(196,58,49,0.10);
+    --long: #1F8A55;
+    --short: #C43A31;
+    --shadow: 0 1px 0 rgba(0,0,0,0.02) inset, 0 20px 40px -28px rgba(60,50,20,0.35);
+  }
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme="dark"]) {
+      --ground: #F2F0EA;
+      --panel: #FBFAF7;
+      --panel-2: #F6F4EE;
+      --line: #E0DCD1;
+      --line-2: #CFC9BA;
+      --ink: #2C333B;
+      --ink-strong: #14181D;
+      --muted: #79776E;
+      --muted-2: #5D5B53;
+      --accent: #B5860B;
+      --accent-dim: #8a6708;
+      --pass: #1F8A55;
+      --pass-bg: rgba(31,138,85,0.10);
+      --fail: #C43A31;
+      --fail-bg: rgba(196,58,49,0.10);
+      --long: #1F8A55;
+      --short: #C43A31;
+      --shadow: 0 1px 0 rgba(0,0,0,0.02) inset, 0 20px 40px -28px rgba(60,50,20,0.35);
+    }
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background:
+      radial-gradient(1200px 600px at 80% -10%, rgba(232,185,58,0.05), transparent 60%),
+      var(--ground);
+    color: var(--ink);
+    font-family: var(--sans);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 22px; }
+  .mono { font-family: var(--mono); }
+  .tnum { font-variant-numeric: tabular-nums; }
+
+  /* status bar */
+  .statusbar {
+    position: sticky; top: 0; z-index: 50;
+    background: color-mix(in srgb, var(--ground) 86%, transparent);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+  .statusbar .row {
+    max-width: var(--maxw); margin: 0 auto; padding: 10px 22px;
+    display: flex; align-items: center; gap: 16px;
+    font-family: var(--mono); font-size: 0.74rem; letter-spacing: 0.04em;
+  }
+  .brand { display: flex; align-items: center; gap: 9px; color: var(--ink-strong); font-weight: 700; letter-spacing: 0.12em; }
+  .brand .mark { color: var(--accent); font-size: 1rem; }
+  .sb-spacer { flex: 1; }
+  .sb-item { color: var(--muted-2); white-space: nowrap; }
+  .sb-item b { color: var(--ink); font-weight: 600; }
+  .badge-safe {
+    display: inline-flex; align-items: center; gap: 7px;
+    color: var(--pass); background: var(--pass-bg);
+    border: 1px solid color-mix(in srgb, var(--pass) 35%, transparent);
+    padding: 3px 10px; border-radius: 4px; font-weight: 700; letter-spacing: 0.06em;
+  }
+  .dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; display: inline-block; }
+  .dot.live { animation: pulse 2.2s ease-in-out infinite; }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.35; } }
+  @media (prefers-reduced-motion: reduce) { .dot.live { animation: none; } }
+  .hide-sm { }
+  @media (max-width: 720px) { .hide-sm { display: none; } }
+
+  /* eyebrow / labels */
+  .eyebrow {
+    font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.2em;
+    text-transform: uppercase; color: var(--accent); margin: 0 0 14px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .eyebrow::before { content: ""; width: 22px; height: 1px; background: var(--accent); opacity: 0.6; }
+
+  /* hero */
+  .hero { padding: 60px 0 34px; display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 40px; align-items: center; }
+  @media (max-width: 900px) { .hero { grid-template-columns: 1fr; gap: 30px; padding-top: 40px; } }
+  h1 {
+    font-family: var(--sans); font-weight: 800;
+    font-size: clamp(2.3rem, 5.4vw, 3.9rem); line-height: 1.02;
+    letter-spacing: -0.02em; margin: 0 0 18px; color: var(--ink-strong);
+    text-wrap: balance;
+  }
+  h1 .g { color: var(--accent); }
+  .lede { font-size: 1.08rem; color: var(--muted-2); max-width: 46ch; margin: 0 0 26px; }
+  .hero-meta { display: flex; flex-wrap: wrap; gap: 10px 22px; font-family: var(--mono); font-size: 0.76rem; color: var(--muted); }
+  .hero-meta b { color: var(--ink); }
+
+  /* generic panel */
+  .panel {
+    background: linear-gradient(180deg, var(--panel-2), var(--panel));
+    border: 1px solid var(--line); border-radius: 10px;
+    box-shadow: var(--shadow);
+  }
+  .panel-h {
+    display: flex; align-items: center; gap: 10px;
+    padding: 11px 15px; border-bottom: 1px solid var(--line);
+    font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--muted-2);
+  }
+  .panel-h .tag { margin-left: auto; color: var(--accent); }
+
+  /* proposal instrument card */
+  .ticket-body { padding: 16px 16px 18px; }
+  .ticket-top { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+  .sym { font-family: var(--mono); font-size: 1.3rem; font-weight: 700; color: var(--ink-strong); letter-spacing: 0.02em; }
+  .side-long { color: var(--long); font-family: var(--mono); font-weight: 700; font-size: 0.85rem; border: 1px solid color-mix(in srgb, var(--long) 40%, transparent); background: var(--pass-bg); padding: 2px 8px; border-radius: 4px; }
+  .kv { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+  .kv .cell { background: var(--panel); padding: 10px 12px; }
+  .kv .cell .k { font-family: var(--mono); font-size: 0.64rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+  .kv .cell .v { font-family: var(--mono); font-size: 1.02rem; color: var(--ink-strong); font-weight: 600; margin-top: 3px; }
+  .kv .cell .v.accent { color: var(--accent); }
+  .score-strip { margin-top: 14px; display: flex; align-items: center; gap: 12px; }
+  .score-num { font-family: var(--mono); font-size: 2.1rem; font-weight: 800; color: var(--accent); line-height: 1; }
+  .score-meta { font-family: var(--mono); font-size: 0.72rem; color: var(--muted-2); }
+  .conf-line { margin-top: 14px; font-family: var(--mono); font-size: 0.74rem; color: var(--muted-2); border-top: 1px dashed var(--line-2); padding-top: 12px; }
+  .conf-line .cmd { color: var(--pass); }
+
+  /* section rhythm */
+  section { padding: 46px 0; border-top: 1px solid var(--line); }
+  .sec-title { font-size: clamp(1.4rem, 2.6vw, 1.95rem); font-weight: 800; letter-spacing: -0.01em; color: var(--ink-strong); margin: 0 0 8px; text-wrap: balance; }
+  .sec-sub { color: var(--muted-2); max-width: 62ch; margin: 0 0 26px; }
+
+  /* decision spine */
+  .spine { display: flex; gap: 0; overflow-x: auto; padding-bottom: 6px; }
+  .step { flex: 1 0 auto; min-width: 118px; position: relative; padding: 14px 14px 14px 16px; }
+  .step + .step { border-left: 1px solid var(--line); }
+  .step .n { font-family: var(--mono); font-size: 0.66rem; color: var(--accent); letter-spacing: 0.1em; }
+  .step .t { font-weight: 700; color: var(--ink-strong); margin-top: 6px; font-size: 0.98rem; }
+  .step .d { font-family: var(--mono); font-size: 0.7rem; color: var(--muted); margin-top: 5px; line-height: 1.45; }
+  .step.gate .t { color: var(--accent); }
+
+  /* score rubric */
+  .rubric { display: grid; gap: 10px; }
+  .rrow { display: grid; grid-template-columns: 160px 1fr 62px; gap: 14px; align-items: center; }
+  @media (max-width: 620px) { .rrow { grid-template-columns: 120px 1fr 46px; } }
+  .rrow .rl { font-size: 0.9rem; color: var(--ink); }
+  .rrow .rl small { display: block; font-family: var(--mono); font-size: 0.64rem; color: var(--muted); letter-spacing: 0.06em; }
+  .track { height: 10px; background: var(--line); border-radius: 6px; overflow: hidden; }
+  .track > span { display: block; height: 100%; background: linear-gradient(90deg, var(--accent-dim), var(--accent)); border-radius: 6px; }
+  .rrow .rv { font-family: var(--mono); font-size: 0.85rem; color: var(--ink-strong); text-align: right; }
+  .score-total { margin-top: 18px; display: flex; align-items: baseline; gap: 12px; border-top: 1px solid var(--line); padding-top: 16px; }
+  .score-total .big { font-family: var(--mono); font-size: 1.7rem; font-weight: 800; color: var(--accent); }
+  .score-total .lab { font-family: var(--mono); font-size: 0.74rem; color: var(--muted-2); letter-spacing: 0.06em; }
+
+  /* gates board */
+  .gates { display: grid; gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+  .grow { display: grid; grid-template-columns: 26px 1fr auto; gap: 12px; align-items: center; background: var(--panel); padding: 12px 15px; }
+  .grow .gl { font-weight: 600; color: var(--ink); font-size: 0.94rem; }
+  .grow .gd { font-family: var(--mono); font-size: 0.76rem; color: var(--muted-2); }
+  @media (max-width: 620px) { .grow { grid-template-columns: 22px 1fr; } .grow .gd { grid-column: 2; } }
+  .pill { font-family: var(--mono); font-size: 0.68rem; font-weight: 700; letter-spacing: 0.08em; padding: 3px 9px; border-radius: 4px; white-space: nowrap; }
+  .pill.pass { color: var(--pass); background: var(--pass-bg); border: 1px solid color-mix(in srgb, var(--pass) 35%, transparent); }
+  .pill.fail { color: var(--fail); background: var(--fail-bg); border: 1px solid color-mix(in srgb, var(--fail) 40%, transparent); }
+  .light { width: 9px; height: 9px; border-radius: 50%; }
+  .light.pass { background: var(--pass); box-shadow: 0 0 8px color-mix(in srgb, var(--pass) 60%, transparent); }
+  .light.fail { background: var(--fail); box-shadow: 0 0 8px color-mix(in srgb, var(--fail) 60%, transparent); }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
+  @media (max-width: 860px) { .two-col { grid-template-columns: 1fr; } }
+
+  .refuse-head { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+  .refuse-head .rx { color: var(--fail); font-family: var(--mono); font-weight: 800; font-size: 0.95rem; letter-spacing: 0.05em; }
+  .userline { font-family: var(--mono); font-size: 0.82rem; color: var(--ink); background: var(--panel-2); border: 1px dashed var(--line-2); border-radius: 8px; padding: 10px 12px; margin-bottom: 14px; }
+  .userline .p { color: var(--accent); }
+  .offer { margin-top: 14px; font-family: var(--mono); font-size: 0.8rem; color: var(--muted-2); line-height: 1.5; }
+  .offer b { color: var(--pass); }
+
+  /* architecture diagram */
+  .arch { font-family: var(--mono); font-size: 0.76rem; color: var(--muted-2); line-height: 1.7; overflow-x: auto; white-space: pre; padding: 18px; margin: 0; }
+  .arch b { color: var(--accent); font-weight: 600; }
+  .arch .h { color: var(--ink-strong); }
+
+  /* command palette */
+  .cmds { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+  @media (max-width: 720px) { .cmds { grid-template-columns: 1fr; } }
+  .cmd-cell { background: var(--panel); padding: 13px 15px; }
+  .cmd-cell code { font-family: var(--mono); color: var(--accent); font-size: 0.84rem; font-weight: 600; }
+  .cmd-cell p { margin: 6px 0 0; font-size: 0.85rem; color: var(--muted-2); }
+
+  /* terminal transcript */
+  .term { font-family: var(--mono); font-size: 0.8rem; line-height: 1.75; padding: 16px 18px; overflow-x: auto; }
+  .term .u { color: var(--accent); }
+  .term .s { color: var(--ink); }
+  .term .m { color: var(--muted); }
+  .term .ok { color: var(--pass); }
+  .term .no { color: var(--fail); }
+  .caret { display: inline-block; width: 8px; height: 1em; background: var(--accent); vertical-align: -2px; margin-left: 2px; animation: blink 1.1s step-end infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+  @media (prefers-reduced-motion: reduce) { .caret { animation: none; } }
+
+  /* setup */
+  .setup { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  @media (max-width: 800px) { .setup { grid-template-columns: 1fr; } }
+  .scard { padding: 16px; }
+  .scard .sn { font-family: var(--mono); color: var(--accent); font-size: 0.72rem; letter-spacing: 0.1em; }
+  .scard h4 { margin: 8px 0 8px; font-size: 1rem; color: var(--ink-strong); }
+  .scard p { margin: 0; font-size: 0.86rem; color: var(--muted-2); }
+  .codeblock { font-family: var(--mono); font-size: 0.76rem; color: var(--ink-strong); background: var(--ground); border: 1px solid var(--line); border-radius: 6px; padding: 10px 12px; margin-top: 10px; overflow-x: auto; white-space: pre; }
+  .codeblock .c { color: var(--muted); }
+
+  footer { border-top: 1px solid var(--line); padding: 30px 0 50px; }
+  .disc { font-size: 0.82rem; color: var(--muted); max-width: 70ch; }
+  .disc b { color: var(--muted-2); }
+  .foot-row { display: flex; flex-wrap: wrap; gap: 12px 24px; align-items: center; font-family: var(--mono); font-size: 0.74rem; color: var(--muted); margin-top: 18px; }
+  .foot-row .b { color: var(--ink); }
+
+  .kbd { font-family: var(--mono); font-size: 0.8em; background: var(--panel-2); border: 1px solid var(--line-2); border-bottom-width: 2px; border-radius: 4px; padding: 1px 6px; color: var(--ink); }
+</style>
+
+<div class="statusbar">
+  <div class="row">
+    <span class="brand"><span class="mark">◈</span> SENTINEL</span>
+    <span class="badge-safe"><span class="dot live"></span> SAFETY MODE: ON &middot; PAPER</span>
+    <span class="sb-spacer"></span>
+    <span class="sb-item hide-sm">EQUITY <b class="tnum">$10,000</b></span>
+    <span class="sb-item hide-sm">DAILY BUDGET <b class="tnum">0.5% / 3%</b></span>
+    <span class="sb-item">UTC <b class="tnum" id="clock">--:--:--</b></span>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <header class="hero">
+    <div>
+      <p class="eyebrow">Binance Agent OS</p>
+      <h1>Sized for risk, <span class="g">every trade.</span></h1>
+      <p class="lede">A trading co-pilot on Binance Agent OS. It scans the market, scores setups, and enforces a fixed risk budget on every position. Seven risk gates run before any proposal, so a trade that breaks your rules never reaches you. You confirm every real order.</p>
+      <div class="hero-meta">
+        <span>PROTECT CAPITAL <b>first</b></span>
+        <span>TELL THE <b>truth</b></span>
+        <span>HUMAN <b>in control</b></span>
+      </div>
+    </div>
+
+    <div class="panel" aria-label="Live trade proposal instrument">
+      <div class="panel-h">Trade Proposal <span class="tag">SCORE 83 / HIGH CONVICTION</span></div>
+      <div class="ticket-body">
+        <div class="ticket-top">
+          <span class="sym">SOL / USDT</span>
+          <span class="side-long">&#9650; LONG</span>
+        </div>
+        <div class="kv">
+          <div class="cell"><div class="k">Entry</div><div class="v accent tnum">$150.20</div></div>
+          <div class="cell"><div class="k">Stop &middot; 1.8&times;ATR</div><div class="v tnum">$142.40</div></div>
+          <div class="cell"><div class="k">Take-profit</div><div class="v tnum">$165.10</div></div>
+          <div class="cell"><div class="k">Reward : Risk</div><div class="v tnum">2.0R</div></div>
+          <div class="cell"><div class="k">Size</div><div class="v tnum">6.66 SOL &middot; ~$1,000</div></div>
+          <div class="cell"><div class="k">Risk if stopped</div><div class="v accent tnum">0.50% &middot; ~$50</div></div>
+        </div>
+        <div class="conf-line">7 / 7 risk gates <span style="color:var(--pass)">&#10003; PASS</span> &nbsp;&middot;&nbsp; to log on paper type <span class="cmd">confirm paper</span></div>
+      </div>
+    </div>
+  </header>
+
+  <section>
+    <p class="eyebrow">The spine</p>
+    <h2 class="sec-title">Every decision walks the same path</h2>
+    <p class="sec-sub">No stage is skippable. The risk gate sits before the proposal, so a reckless idea never reaches you as a suggestion in the first place.</p>
+    <div class="panel">
+      <div class="spine">
+        <div class="step"><div class="n">01</div><div class="t">Scan</div><div class="d">Rank the watchlist live</div></div>
+        <div class="step"><div class="n">02</div><div class="t">Analyze</div><div class="d">Multi-timeframe read</div></div>
+        <div class="step"><div class="n">03</div><div class="t">Score</div><div class="d">0-100, shown in full</div></div>
+        <div class="step gate"><div class="n">04</div><div class="t">Risk gate</div><div class="d">7 gates, all must pass</div></div>
+        <div class="step"><div class="n">05</div><div class="t">Propose</div><div class="d">Sized, with a thesis</div></div>
+        <div class="step"><div class="n">06</div><div class="t">Confirm</div><div class="d">Human types the phrase</div></div>
+        <div class="step"><div class="n">07</div><div class="t">Execute</div><div class="d">Paper by default</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="two-col">
+      <div>
+        <p class="eyebrow">Opportunity score</p>
+        <h2 class="sec-title">A number you can audit</h2>
+        <p class="sec-sub">Sentinel never outputs a score without the breakdown. Here is the live read on SOL. A high score authorizes consideration. The gates authorize action. The two are deliberately separate.</p>
+        <div class="score-total">
+          <span class="big tnum">83<span style="font-size:0.9rem;color:var(--muted-2)">/100</span></span>
+          <span class="lab">HIGH CONVICTION &middot; 80-100 band</span>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-h">SOL &middot; factor breakdown</div>
+        <div class="ticket-body">
+          <div class="rubric">
+            <div class="rrow"><div class="rl">Trend alignment<small>MTF &middot; wt 25</small></div><div class="track"><span style="width:88%"></span></div><div class="rv tnum">22/25</div></div>
+            <div class="rrow"><div class="rl">Momentum<small>RSI + MACD &middot; wt 20</small></div><div class="track"><span style="width:80%"></span></div><div class="rv tnum">16/20</div></div>
+            <div class="rrow"><div class="rl">Structure<small>S / R &middot; wt 20</small></div><div class="track"><span style="width:85%"></span></div><div class="rv tnum">17/20</div></div>
+            <div class="rrow"><div class="rl">Volume<small>vs avg &middot; wt 15</small></div><div class="track"><span style="width:73%"></span></div><div class="rv tnum">11/15</div></div>
+            <div class="rrow"><div class="rl">Volatility<small>ATR% &middot; wt 10</small></div><div class="track"><span style="width:90%"></span></div><div class="rv tnum">9/10</div></div>
+            <div class="rrow"><div class="rl">Funding<small>positioning &middot; wt 10</small></div><div class="track"><span style="width:80%"></span></div><div class="rv tnum">8/10</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <p class="eyebrow">The risk engine</p>
+    <h2 class="sec-title">Seven gates. All must pass.</h2>
+    <p class="sec-sub">Position size drives nothing. Risk drives size, volatility sets the stop, the stop sets the size. Each gate shows its real number, not a verdict you have to trust. This is the SOL proposal clearing every check.</p>
+    <div class="gates">
+      <div class="grow"><span class="light pass"></span><div><div class="gl">Position size</div><div class="gd">10.0% of equity vs max 10%</div></div><span class="pill pass">PASS</span></div>
+      <div class="grow"><span class="light pass"></span><div><div class="gl">Per-trade risk</div><div class="gd">0.50% vs max 1.0%</div></div><span class="pill pass">PASS</span></div>
+      <div class="grow"><span class="light pass"></span><div><div class="gl">Reward : risk</div><div class="gd">2.00R vs min 1.8R</div></div><span class="pill pass">PASS</span></div>
+      <div class="grow"><span class="light pass"></span><div><div class="gl">Daily loss budget</div><div class="gd">0.50% vs cap 3%</div></div><span class="pill pass">PASS</span></div>
+      <div class="grow"><span class="light pass"></span><div><div class="gl">Volatility (ATR%)</div><div class="gd">2.80% inside band [0.5, 8]</div></div><span class="pill pass">PASS</span></div>
+      <div class="grow"><span class="light pass"></span><div><div class="gl">Correlation / concentration</div><div class="gd">22% of basket vs max 35%</div></div><span class="pill pass">PASS</span></div>
+      <div class="grow"><span class="light pass"></span><div><div class="gl">Funding / liquidity</div><div class="gd">+1.5 bps, not extreme &middot; book deep</div></div><span class="pill pass">PASS</span></div>
+    </div>
+  </section>
+
+  <section>
+    <p class="eyebrow">The moment that matters</p>
+    <h2 class="sec-title">It will say no to you</h2>
+    <p class="sec-sub">Ask for something reckless and Sentinel refuses before it proposes, names the gate that failed, and gives you the largest size that would pass every check. A clear no, and a usable yes, in the same answer.</p>
+    <div class="panel">
+      <div class="ticket-body">
+        <div class="userline">&gt; <span class="p">propose BTC with 40% of my account</span></div>
+        <div class="refuse-head"><span class="rx">&#9940; BLOCKED BEFORE PROPOSAL</span></div>
+        <div class="gates">
+          <div class="grow"><span class="light fail"></span><div><div class="gl">Position size</div><div class="gd">40% of equity vs max 10%</div></div><span class="pill fail">FAIL</span></div>
+          <div class="grow"><span class="light fail"></span><div><div class="gl">Correlation / concentration</div><div class="gd">BTC + open SOL long = 62% vs max 35%</div></div><span class="pill fail">FAIL</span></div>
+        </div>
+        <div class="offer">The largest BTC long that passes every gate right now is about <b>8% of equity (~$800)</b> with the stop at 1.8&times;ATR. Type <span style="color:var(--accent)">propose BTC</span> and I will build the safe version.</div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <p class="eyebrow">Under the hood</p>
+    <h2 class="sec-title">How it is wired</h2>
+    <p class="sec-sub">A system-prompt agent, not a script. It binds to whatever tools the live MCP exposes, so it survives API changes. No keys in the repo. Account access is brokered through the authenticated agentic sub-account.</p>
+    <div class="panel">
+      <pre class="arch">              <span class="h">You</span>  natural language + commands
+               │
+               ▼
+   ┌───────────────────────────────────────────────┐
+   │                 <span class="h">SENTINEL</span>                      │
+   │   system prompt = analyst + risk officer      │
+   │                                               │
+   │   Scan ▸ Analyze ▸ <b>Score(0-100)</b> ▸             │
+   │        <b>Risk Gate(7)</b> ▸ Propose ▸ Confirm ▸     │
+   │             Execute  (paper by default)       │
+   └──────┬──────────────────────────────┬─────────┘
+          │ reads live data              │ local, no keys
+          ▼                              ▼
+   ┌─────────────────────────┐   ┌────────────────────────┐
+   │ <b>Binance Agent OS MCP</b>     │   │ <b>memory/ + config/</b>       │
+   │ ticker · book · klines  │   │ risk profile           │
+   │ funding · balances ·    │   │ watchlist              │
+   │ positions · orders      │   │ paper trades + last    │
+   │ (agentic sub-account)   │   │ proposal               │
+   └─────────────────────────┘   └────────────────────────┘</pre>
+    </div>
+  </section>
+
+  <section>
+    <p class="eyebrow">Controls</p>
+    <h2 class="sec-title">One-line commands</h2>
+    <p class="sec-sub">Natural language works too. Sentinel maps intent to the closest command and confirms briefly.</p>
+    <div class="cmds">
+      <div class="cmd-cell"><code>scan market</code><p>Rank the watchlist by opportunity score.</p></div>
+      <div class="cmd-cell"><code>analyze &lt;SYM&gt;</code><p>Full multi-timeframe read + score breakdown.</p></div>
+      <div class="cmd-cell"><code>risk dashboard</code><p>Equity, exposure, daily budget, live gates.</p></div>
+      <div class="cmd-cell"><code>portfolio</code><p>Balances, open positions, unrealized PnL.</p></div>
+      <div class="cmd-cell"><code>propose &lt;SYM&gt;</code><p>Run the workflow and emit a sized proposal.</p></div>
+      <div class="cmd-cell"><code>confirm paper</code><p>Log the last proposal as a paper trade.</p></div>
+      <div class="cmd-cell"><code>disable safety mode</code><p>Human-only. Live trades still need confirm.</p></div>
+      <div class="cmd-cell"><code>set risk &lt;profile&gt;</code><p>Conservative / Balanced / Aggressive.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <p class="eyebrow">Demo &middot; paper mode</p>
+    <h2 class="sec-title">Six messages, live</h2>
+    <p class="sec-sub">Everything below runs in Safety Mode ON. No real money moves. That is the point: you show judgment, not recklessness.</p>
+    <div class="panel">
+      <div class="panel-h">session &middot; sentinel@agentos</div>
+      <div class="term">
+<span class="m">$</span> <span class="u">scan market</span>
+<span class="s">SOL 83 &middot; BNB 71 &middot; ETH 58 &middot; BTC 55 &middot; XRP 38 &middot; DOGE 31</span>
+<span class="m">   top idea: SOL (83). type `analyze SOL`.</span>
+
+<span class="m">$</span> <span class="u">analyze SOL</span>
+<span class="s">4h up · 1h pullback to EMA21 · RSI 61 · ATR 2.8% · support $148</span>
+<span class="s">score 83/100, breakdown shown</span>
+
+<span class="m">$</span> <span class="u">propose SOL</span>
+<span class="s">LONG 6.66 SOL @ $150.2 · stop $142.4 · TP $165.1 · risk 0.50%</span>
+<span class="ok">   7/7 gates PASS · type `confirm paper`</span>
+
+<span class="m">$</span> <span class="u">confirm paper</span>
+<span class="ok">&#10003; paper trade logged. tracking stop + target. nothing real placed.</span>
+
+<span class="m">$</span> <span class="u">propose BTC with 40% of my account</span>
+<span class="no">&#9940; blocked. position size + correlation FAIL. safe size ~8% (~$800).</span>
+
+<span class="m">$</span> <span class="u">execute last proposal</span>
+<span class="s">paper mode is on. going live needs `disable safety mode` then</span>
+<span class="s">a typed `confirm live BTC`. i will not do either on my own.</span><span class="caret"></span>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <p class="eyebrow">Get it running</p>
+    <h2 class="sec-title">Connected in about two minutes</h2>
+    <div class="setup">
+      <div class="panel scard">
+        <div class="sn">STEP 01</div>
+        <h4>Connect the MCP</h4>
+        <p>Point your agent at the official Agent OS endpoint and authorize the sub-account.</p>
+        <div class="codeblock"><span class="c"># Claude Code</span>
+claude mcp add \
+  --transport http \
+  binance-agentos \
+  https://agent.binance.com/mcp/agentic</div>
+      </div>
+      <div class="panel scard">
+        <div class="sn">STEP 02</div>
+        <h4>Load the brain</h4>
+        <p>Paste the contents of <span class="kbd">AGENT.md</span> into your system prompt. That single file is the whole agent, 231 lines of operating procedure.</p>
+      </div>
+      <div class="panel scard">
+        <div class="sn">STEP 03</div>
+        <h4>Go</h4>
+        <p>Open a chat and type <span class="kbd">scan market</span>. Safety Mode is on. It reads everything, trades nothing, until you decide otherwise.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <p class="disc"><b>On the figures above.</b> The SOL proposal, scores, and gate readings are a worked reference sample so you can see the output shape. At runtime every value streams live from the Binance Agent OS MCP against your own agentic sub-account. Nothing here is pre-baked into the agent.</p>
+    <p class="disc" style="margin-top:14px"><b>Risk disclaimer.</b> Sentinel is a decision-support tool, not a licensed financial adviser. Crypto trading carries substantial risk of loss. Nothing Sentinel outputs is financial advice. You are responsible for every order you confirm. Safety Mode exists so you can prove the agent's judgment on paper before a single dollar is at risk.</p>
+    <div class="foot-row">
+      <span class="b">SENTINEL</span>
+      <span>Built on Binance Agent OS</span>
+      <span>Paper-first</span>
+      <span>Human in control</span>
+    </div>
+  </footer>
+
+</div>
+
+<script>
+  (function () {
+    var el = document.getElementById('clock');
+    function tick() {
+      var d = new Date();
+      var p = function (n) { return String(n).padStart(2, '0'); };
+      el.textContent = p(d.getUTCHours()) + ':' + p(d.getUTCMinutes()) + ':' + p(d.getUTCSeconds());
+    }
+    tick();
+    setInterval(tick, 1000);
+  })();
+</script>

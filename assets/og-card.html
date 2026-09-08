@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<style>
+  :root {
+    --ground:#0B0E11; --panel:#12161B; --panel2:#161B22; --line:#1E252E; --line2:#2A333F;
+    --ink:#C7D0DA; --ink-strong:#EDF2F7; --muted:#6B7683; --muted2:#8A94A1;
+    --accent:#E8B93A; --accent-dim:#A9861f; --pass:#3FB57A; --pass-bg:rgba(63,181,122,0.12);
+    --long:#3FB57A;
+    --mono: ui-monospace,"SF Mono","Menlo","Consolas",monospace;
+    --sans: -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
+  }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  html,body { width:1200px; height:630px; }
+  body {
+    background:
+      radial-gradient(900px 500px at 84% -12%, rgba(232,185,58,0.08), transparent 60%),
+      var(--ground);
+    color:var(--ink); font-family:var(--sans);
+    -webkit-font-smoothing:antialiased;
+    display:flex; flex-direction:column;
+  }
+  .frame { flex:1; display:grid; grid-template-columns:1.08fr 0.92fr; gap:52px; padding:56px 60px 30px; align-items:center; }
+
+  .brand { display:flex; align-items:center; gap:14px; margin-bottom:26px; }
+  .mark { color:var(--accent); font-size:30px; line-height:1; }
+  .brandname { font-family:var(--mono); font-weight:700; letter-spacing:0.22em; font-size:26px; color:var(--ink-strong); }
+  .eyebrow { font-family:var(--mono); font-size:16px; letter-spacing:0.22em; text-transform:uppercase; color:var(--accent); display:flex; align-items:center; gap:12px; margin-bottom:22px; }
+  .eyebrow::before { content:""; width:28px; height:2px; background:var(--accent); opacity:0.7; }
+  h1 { font-family:var(--sans); font-weight:800; font-size:64px; line-height:1.0; letter-spacing:-0.02em; color:var(--ink-strong); margin-bottom:22px; }
+  h1 .g { color:var(--accent); }
+  .sub { font-size:23px; color:var(--muted2); max-width:30ch; line-height:1.4; }
+  .chips { display:flex; gap:10px; margin-top:30px; }
+  .chip { font-family:var(--mono); font-size:14.5px; letter-spacing:0.03em; color:var(--ink); background:var(--panel2); border:1px solid var(--line2); border-radius:6px; padding:8px 13px; }
+  .chip b { color:var(--accent); font-weight:600; }
+
+  .panel { background:linear-gradient(180deg,var(--panel2),var(--panel)); border:1px solid var(--line); border-radius:14px; overflow:hidden; box-shadow:0 24px 60px -30px rgba(0,0,0,0.9); }
+  .ph { display:flex; align-items:center; padding:14px 18px; border-bottom:1px solid var(--line); font-family:var(--mono); font-size:14px; letter-spacing:0.12em; text-transform:uppercase; color:var(--muted2); }
+  .ph .tag { margin-left:auto; color:var(--accent); }
+  .pb { padding:18px; }
+  .ptop { display:flex; align-items:baseline; justify-content:space-between; margin-bottom:16px; }
+  .sym { font-family:var(--mono); font-size:30px; font-weight:700; color:var(--ink-strong); letter-spacing:0.02em; }
+  .side { font-family:var(--mono); font-weight:700; font-size:17px; color:var(--long); border:1px solid rgba(63,181,122,0.4); background:var(--pass-bg); padding:4px 12px; border-radius:6px; }
+  .kv { display:grid; grid-template-columns:1fr 1fr; gap:1px; background:var(--line); border:1px solid var(--line); border-radius:9px; overflow:hidden; }
+  .cell { background:var(--panel); padding:12px 14px; }
+  .cell .k { font-family:var(--mono); font-size:12.5px; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); }
+  .cell .v { font-family:var(--mono); font-size:22px; color:var(--ink-strong); font-weight:600; margin-top:4px; }
+  .cell .v.a { color:var(--accent); }
+  .gatebar { margin-top:16px; display:flex; align-items:center; gap:12px; background:var(--pass-bg); border:1px solid rgba(63,181,122,0.35); border-radius:9px; padding:13px 15px; }
+  .gatebar .dot { width:11px; height:11px; border-radius:50%; background:var(--pass); box-shadow:0 0 10px rgba(63,181,122,0.6); }
+  .gatebar .t { font-family:var(--mono); font-size:18px; font-weight:700; color:var(--pass); letter-spacing:0.04em; }
+  .gatebar .s { font-family:var(--mono); font-size:14px; color:var(--muted2); margin-left:auto; }
+
+  .footer { height:64px; border-top:1px solid var(--line); display:flex; align-items:center; gap:22px; padding:0 60px; font-family:var(--mono); font-size:16px; color:var(--muted); }
+  .footer .safe { display:flex; align-items:center; gap:9px; color:var(--pass); font-weight:700; letter-spacing:0.04em; }
+  .footer .safe .d { width:9px; height:9px; border-radius:50%; background:var(--pass); }
+  .footer .url { margin-left:auto; color:var(--ink); }
+  .footer .sep { color:var(--line2); }
+</style>
+</head>
+<body>
+  <div class="frame">
+    <div>
+      <div class="brand"><span class="mark">&#9672;</span><span class="brandname">SENTINEL</span></div>
+      <div class="eyebrow">Binance Agent OS</div>
+      <h1>Sized for risk,<br><span class="g">every trade.</span></h1>
+      <div class="sub">Scans the market, sizes every trade to a fixed risk budget, and refuses what breaks the rules.</div>
+      <div class="chips">
+        <span class="chip"><b>7</b> risk gates</span>
+        <span class="chip"><b>Paper</b>-first</span>
+        <span class="chip"><b>Human</b> in control</span>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="ph">Trade Proposal <span class="tag">SCORE 83 / HIGH CONVICTION</span></div>
+      <div class="pb">
+        <div class="ptop"><span class="sym">SOL / USDT</span><span class="side">&#9650; LONG</span></div>
+        <div class="kv">
+          <div class="cell"><div class="k">Entry</div><div class="v a">$150.20</div></div>
+          <div class="cell"><div class="k">Stop &middot; 1.8&times;ATR</div><div class="v">$142.40</div></div>
+          <div class="cell"><div class="k">Risk if stopped</div><div class="v a">0.50%</div></div>
+          <div class="cell"><div class="k">Reward : risk</div><div class="v">2.0R</div></div>
+        </div>
+        <div class="gatebar"><span class="dot"></span><span class="t">7 / 7 GATES PASS</span><span class="s">size &middot; risk &middot; funding &middot; correlation</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <span class="safe"><span class="d"></span>SAFETY MODE: ON &middot; PAPER</span>
+    <span class="sep">|</span>
+    <span>No blind execution</span>
+    <span class="url">excellency001-boop.github.io/sentinel-binance-agentos</span>
+  </div>
+</body>
+</html>

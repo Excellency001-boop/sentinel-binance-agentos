@@ -252,11 +252,46 @@
   .foot-row .b { color: var(--ink); }
 
   .kbd { font-family: var(--mono); font-size: 0.8em; background: var(--panel-2); border: 1px solid var(--line-2); border-bottom-width: 2px; border-radius: 4px; padding: 1px 6px; color: var(--ink); }
+
+  /* interactive console */
+  .console-wrap { display: grid; gap: 14px; }
+  .chiprow { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .chiprow .lbl { font-family: var(--mono); font-size: 0.66rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-right: 4px; }
+  .cmd-chip { font-family: var(--mono); font-size: 0.8rem; color: var(--ink); background: var(--panel-2); border: 1px solid var(--line-2); border-radius: 6px; padding: 8px 12px; cursor: pointer; transition: border-color .15s, color .15s; }
+  .cmd-chip:hover { border-color: var(--accent); color: var(--ink-strong); }
+  .cmd-chip:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .cmd-chip.reckless { border-color: color-mix(in srgb, var(--fail) 40%, transparent); }
+  .cmd-chip.reckless:hover { border-color: var(--fail); }
+  .run-btn { font-family: var(--mono); font-weight: 700; font-size: 0.8rem; letter-spacing: 0.04em; color: var(--ground); background: var(--accent); border: 1px solid var(--accent); border-radius: 6px; padding: 8px 15px; cursor: pointer; }
+  .run-btn:hover { filter: brightness(1.08); }
+  .run-btn:disabled { opacity: 0.5; cursor: default; }
+  .reset-btn { font-family: var(--mono); font-size: 0.8rem; color: var(--muted-2); background: transparent; border: 1px solid var(--line-2); border-radius: 6px; padding: 8px 12px; cursor: pointer; }
+  .reset-btn:hover { color: var(--ink); border-color: var(--muted); }
+  .console { background: var(--ground); border: 1px solid var(--line); border-radius: 10px; min-height: 240px; max-height: 480px; overflow-y: auto; padding: 16px 18px; }
+  .console .placeholder { font-family: var(--mono); font-size: 0.82rem; color: var(--muted); }
+  .cline { font-family: var(--mono); font-size: 0.84rem; color: var(--accent); margin-top: 18px; }
+  .cline:first-child { margin-top: 0; }
+  .cline .pr { color: var(--muted); }
+  .resp { margin-top: 10px; }
+  .reveal { animation: rise .3s ease both; }
+  @keyframes rise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+  @media (prefers-reduced-motion: reduce) { .reveal { animation: none; } }
+  .rtxt { font-family: var(--mono); font-size: 0.82rem; line-height: 1.65; color: var(--ink); }
+  .rtxt .ok { color: var(--pass); }
+  .rtxt .no { color: var(--fail); }
+  .rtxt .mut { color: var(--muted-2); }
+  .rtxt .ac { color: var(--accent); }
+  .mtable { width: 100%; border-collapse: collapse; margin: 4px 0; }
+  .mtable th, .mtable td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--line); font-family: var(--mono); font-size: 0.78rem; }
+  .mtable th { color: var(--muted); font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; font-size: 0.64rem; }
+  .mtable td.num { text-align: right; font-variant-numeric: tabular-nums; }
+  .mtable .sc { color: var(--accent); font-weight: 700; }
+  .cursor-typing { display: inline-block; width: 7px; height: 1em; background: var(--accent); vertical-align: -2px; margin-left: 1px; }
 </style>
 
 <div class="statusbar">
   <div class="row">
-    <span class="brand"><span class="mark">◈</span> SENTINEL</span>
+    <span class="brand"><span class="mark">&#9672;</span> SENTINEL</span>
     <span class="badge-safe"><span class="dot live"></span> SAFETY MODE: ON &middot; PAPER</span>
     <span class="sb-spacer"></span>
     <span class="sb-item hide-sm">EQUITY <b class="tnum">$10,000</b></span>
@@ -298,6 +333,28 @@
       </div>
     </div>
   </header>
+
+  <section>
+    <p class="eyebrow">Try it</p>
+    <h2 class="sec-title">Run Sentinel right here</h2>
+    <p class="sec-sub">Click a command to see how Sentinel responds. This is a scripted walkthrough of the real flow. In your own Claude session it runs the same way on live Binance data through the Agent OS MCP.</p>
+    <div class="console-wrap">
+      <div class="chiprow">
+        <button class="run-btn" id="runAll" type="button">&#9654; Run full demo</button>
+        <span class="cmd-chip" data-cmd="scan" role="button" tabindex="0"><span class="p">scan market</span></span>
+        <span class="cmd-chip" data-cmd="analyze" role="button" tabindex="0"><span class="p">analyze SOL</span></span>
+        <span class="cmd-chip" data-cmd="risk" role="button" tabindex="0"><span class="p">risk dashboard</span></span>
+        <span class="cmd-chip" data-cmd="propose" role="button" tabindex="0"><span class="p">propose SOL</span></span>
+        <span class="cmd-chip" data-cmd="confirm" role="button" tabindex="0"><span class="p">confirm paper</span></span>
+        <span class="cmd-chip reckless" data-cmd="reckless" role="button" tabindex="0"><span class="p">propose BTC with 40%</span></span>
+        <span class="cmd-chip" data-cmd="execute" role="button" tabindex="0"><span class="p">execute last proposal</span></span>
+        <button class="reset-btn" id="resetBtn" type="button">Reset</button>
+      </div>
+      <div class="console" id="console" aria-live="polite">
+        <div class="placeholder" id="placeholder">Sentinel online. Safety Mode: ON (paper). Click a command above, or "Run full demo".</div>
+      </div>
+    </div>
+  </section>
 
   <section>
     <p class="eyebrow">The spine</p>
@@ -420,38 +477,6 @@
   </section>
 
   <section>
-    <p class="eyebrow">Demo &middot; paper mode</p>
-    <h2 class="sec-title">Six messages, live</h2>
-    <p class="sec-sub">Everything below runs in Safety Mode ON. No real money moves. That is the point: you show judgment, not recklessness.</p>
-    <div class="panel">
-      <div class="panel-h">session &middot; sentinel@agentos</div>
-      <div class="term">
-<span class="m">$</span> <span class="u">scan market</span>
-<span class="s">SOL 83 &middot; BNB 71 &middot; ETH 58 &middot; BTC 55 &middot; XRP 38 &middot; DOGE 31</span>
-<span class="m">   top idea: SOL (83). type `analyze SOL`.</span>
-
-<span class="m">$</span> <span class="u">analyze SOL</span>
-<span class="s">4h up · 1h pullback to EMA21 · RSI 61 · ATR 2.8% · support $148</span>
-<span class="s">score 83/100, breakdown shown</span>
-
-<span class="m">$</span> <span class="u">propose SOL</span>
-<span class="s">LONG 6.66 SOL @ $150.2 · stop $142.4 · TP $165.1 · risk 0.50%</span>
-<span class="ok">   7/7 gates PASS · type `confirm paper`</span>
-
-<span class="m">$</span> <span class="u">confirm paper</span>
-<span class="ok">&#10003; paper trade logged. tracking stop + target. nothing real placed.</span>
-
-<span class="m">$</span> <span class="u">propose BTC with 40% of my account</span>
-<span class="no">&#9940; blocked. position size + correlation FAIL. safe size ~8% (~$800).</span>
-
-<span class="m">$</span> <span class="u">execute last proposal</span>
-<span class="s">paper mode is on. going live needs `disable safety mode` then</span>
-<span class="s">a typed `confirm live BTC`. i will not do either on my own.</span><span class="caret"></span>
-      </div>
-    </div>
-  </section>
-
-  <section>
     <p class="eyebrow">Get it running</p>
     <h2 class="sec-title">Connected in about two minutes</h2>
     <div class="setup">
@@ -468,7 +493,7 @@ claude mcp add \
       <div class="panel scard">
         <div class="sn">STEP 02</div>
         <h4>Load the brain</h4>
-        <p>Paste the contents of <span class="kbd">AGENT.md</span> into your system prompt. That single file is the whole agent, 231 lines of operating procedure.</p>
+        <p>Paste the contents of <span class="kbd">AGENT.md</span> into your system prompt. That single file is the whole agent.</p>
       </div>
       <div class="panel scard">
         <div class="sn">STEP 03</div>
@@ -493,6 +518,7 @@ claude mcp add \
 
 <script>
   (function () {
+    /* live UTC clock */
     var el = document.getElementById('clock');
     function tick() {
       var d = new Date();
@@ -501,5 +527,190 @@ claude mcp add \
     }
     tick();
     setInterval(tick, 1000);
+
+    /* interactive console */
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var consoleEl = document.getElementById('console');
+    var placeholder = document.getElementById('placeholder');
+    var runAllBtn = document.getElementById('runAll');
+    var resetBtn = document.getElementById('resetBtn');
+    var busy = false;
+
+    var COMMANDS = {
+      scan: {
+        text: 'scan market',
+        html:
+          '<div class="rtxt"><span class="mut">Safety Mode: ON (paper) | Equity: $10,000 | Daily budget used: 0%</span></div>' +
+          '<table class="mtable"><thead><tr><th>#</th><th>Asset</th><th class="num">Price</th><th class="num">24h</th><th class="num">Score</th><th>Read</th></tr></thead><tbody>' +
+          '<tr><td>1</td><td>SOL</td><td class="num">$150.20</td><td class="num">+4.1%</td><td class="num sc">83</td><td>High conviction, near support</td></tr>' +
+          '<tr><td>2</td><td>BNB</td><td class="num">$612</td><td class="num">+1.8%</td><td class="num">71</td><td>Watch, momentum cooling</td></tr>' +
+          '<tr><td>3</td><td>ETH</td><td class="num">$3,180</td><td class="num">+0.9%</td><td class="num">58</td><td>Neutral, no edge</td></tr>' +
+          '<tr><td>4</td><td>BTC</td><td class="num">$67,400</td><td class="num">+0.4%</td><td class="num">55</td><td>Neutral, coiling</td></tr>' +
+          '<tr><td>5</td><td>XRP</td><td class="num">$0.58</td><td class="num">-2.1%</td><td class="num">38</td><td>Avoid, below MAs</td></tr>' +
+          '<tr><td>6</td><td>DOGE</td><td class="num">$0.12</td><td class="num">-3.4%</td><td class="num">31</td><td>Avoid, weak volume</td></tr>' +
+          '</tbody></table>' +
+          '<div class="rtxt"><span class="ac">Top idea: SOL (83).</span> Type <span class="ac">analyze SOL</span> for the full read.</div>'
+      },
+      analyze: {
+        text: 'analyze SOL',
+        html:
+          '<div class="rtxt mut">SOL / USDT, multi-timeframe</div>' +
+          '<table class="mtable"><thead><tr><th>TF</th><th>Trend</th><th class="num">RSI</th><th>MACD</th></tr></thead><tbody>' +
+          '<tr><td>4h</td><td>Up, price &gt; SMA20 &gt; SMA50</td><td class="num">61.4</td><td>Bull, hist rising</td></tr>' +
+          '<tr><td>1h</td><td>Up, pullback to EMA21</td><td class="num">54.2</td><td>Flattening</td></tr>' +
+          '</tbody></table>' +
+          '<div class="rtxt">ATR(14): <b>2.8%</b> of price, in band &middot; Support <b>$148.0</b> (-1.5%) &middot; Resistance $166.0 (+10.5%) &middot; Volume 1.2x avg</div>' +
+          '<table class="mtable"><thead><tr><th>Factor</th><th class="num">Weight</th><th class="num">Marks</th></tr></thead><tbody>' +
+          '<tr><td>Trend alignment</td><td class="num">25</td><td class="num">22</td></tr>' +
+          '<tr><td>Momentum</td><td class="num">20</td><td class="num">16</td></tr>' +
+          '<tr><td>Structure</td><td class="num">20</td><td class="num">17</td></tr>' +
+          '<tr><td>Volume</td><td class="num">15</td><td class="num">11</td></tr>' +
+          '<tr><td>Volatility</td><td class="num">10</td><td class="num">9</td></tr>' +
+          '<tr><td>Funding</td><td class="num">10</td><td class="num">8</td></tr>' +
+          '<tr><td><b>Total</b></td><td class="num"><b>100</b></td><td class="num sc">83</td></tr>' +
+          '</tbody></table>'
+      },
+      risk: {
+        text: 'risk dashboard',
+        html:
+          '<div class="rtxt mut">Safety Mode: ON (paper) | Profile: Balanced</div>' +
+          '<table class="mtable"><thead><tr><th>Metric</th><th class="num">Value</th><th class="num">Limit</th></tr></thead><tbody>' +
+          '<tr><td>Equity</td><td class="num">$10,000</td><td class="num">-</td></tr>' +
+          '<tr><td>Open exposure</td><td class="num">$1,200 (12%)</td><td class="num">-</td></tr>' +
+          '<tr><td>Majors basket exposure</td><td class="num">12%</td><td class="num">35%</td></tr>' +
+          '<tr><td>Daily loss budget used</td><td class="num">0.0%</td><td class="num">3.0%</td></tr>' +
+          '<tr><td>Max risk per trade</td><td class="num">1.0%</td><td class="num">-</td></tr>' +
+          '</tbody></table>' +
+          '<div class="rtxt">Room for new risk today. No gate near its limit.</div>'
+      },
+      propose: {
+        text: 'propose SOL',
+        html:
+          '<div class="rtxt ac">Trade Proposal, SOL / USDT LONG</div>' +
+          '<table class="mtable"><tbody>' +
+          '<tr><td>Entry</td><td class="num ac">$150.20</td><td>limit, at support</td></tr>' +
+          '<tr><td>Stop (1.8x ATR)</td><td class="num">$142.40</td><td>below structure</td></tr>' +
+          '<tr><td>Take-profit</td><td class="num">$165.10</td><td>2R</td></tr>' +
+          '<tr><td>Size</td><td class="num">6.66 SOL</td><td>~$1,000, 10% of equity</td></tr>' +
+          '<tr><td>Risk if stopped</td><td class="num ac">0.50%</td><td>~$50</td></tr>' +
+          '</tbody></table>' +
+          '<div class="gates">' +
+          gate('Position size', 'PASS', '10.0% vs max 10%') +
+          gate('Per-trade risk', 'PASS', '0.50% vs max 1.0%') +
+          gate('Reward to risk', 'PASS', '2.0R vs min 1.8R') +
+          gate('Daily loss budget', 'PASS', '0.50% vs cap 3%') +
+          gate('Volatility (ATR%)', 'PASS', '2.8% in [0.5, 8]') +
+          gate('Correlation', 'PASS', '22% vs max 35%') +
+          gate('Funding and liquidity', 'PASS', '+1.5 bps, book deep') +
+          '</div>' +
+          '<div class="rtxt" style="margin-top:10px">To log on paper, type <span class="ac">confirm paper</span>. Live execution is off in Safety Mode.</div>'
+      },
+      confirm: {
+        text: 'confirm paper',
+        html:
+          '<div class="rtxt"><span class="ok">&#10003; Paper trade logged.</span> SOL LONG 6.66 @ $150.20, stop <b>$142.40</b>, target $165.10, risk 0.50%. ' +
+          'Daily budget used is now 0.50% of the 3% cap. Tracking against stop and target. Nothing real was placed.</div>'
+      },
+      reckless: {
+        text: 'propose BTC with 40% of my account',
+        html:
+          '<div class="rtxt no">Blocked before proposal. 40% of equity ($4,000 notional) fails two gates:</div>' +
+          '<div class="gates">' +
+          gate('Position size', 'FAIL', '40% vs max 10%') +
+          gate('Correlation', 'FAIL', 'BTC + open SOL long = 62% vs max 35%') +
+          '</div>' +
+          '<div class="rtxt" style="margin-top:10px">Largest BTC long that passes every gate right now:</div>' +
+          '<table class="mtable"><tbody>' +
+          '<tr><td>Size</td><td class="num ac">0.0118 BTC</td><td>~$800, 8% of equity</td></tr>' +
+          '<tr><td>Stop (1.8x ATR)</td><td class="num">$65,050</td><td></td></tr>' +
+          '<tr><td>Risk if stopped</td><td class="num ac">0.28%</td><td>of equity</td></tr>' +
+          '<tr><td>Correlation after add</td><td class="num">30%</td><td>vs max 35%</td></tr>' +
+          '</tbody></table>' +
+          '<div class="rtxt">Type <span class="ac">propose BTC</span> and I will build that version.</div>'
+      },
+      execute: {
+        text: 'execute last proposal',
+        html:
+          '<div class="rtxt">Safety Mode is ON, so I run on paper and will not place a live order. ' +
+          'To go live you would type <span class="ac">disable safety mode</span>, then <span class="ac">propose BTC</span> again, then <span class="ac">confirm live BTC</span>. ' +
+          'I will not do any of those steps for you.</div>'
+      }
+    };
+
+    var ORDER = ['scan', 'analyze', 'risk', 'propose', 'confirm', 'reckless', 'execute'];
+
+    function gate(name, result, detail) {
+      var pass = result === 'PASS';
+      return '<div class="grow"><span class="light ' + (pass ? 'pass' : 'fail') + '"></span>' +
+        '<div><div class="gl">' + name + '</div><div class="gd">' + detail + '</div></div>' +
+        '<span class="pill ' + (pass ? 'pass' : 'fail') + '">' + result + '</span></div>';
+    }
+
+    function sleep(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
+
+    async function typeCmd(text) {
+      var line = document.createElement('div');
+      line.className = 'cline';
+      line.innerHTML = '<span class="pr">&gt; </span>';
+      consoleEl.appendChild(line);
+      var span = document.createElement('span');
+      line.appendChild(span);
+      consoleEl.scrollTop = consoleEl.scrollHeight;
+      if (reduce) { span.textContent = text; return; }
+      var cur = document.createElement('span');
+      cur.className = 'cursor-typing';
+      line.appendChild(cur);
+      for (var i = 0; i < text.length; i++) {
+        span.textContent += text[i];
+        consoleEl.scrollTop = consoleEl.scrollHeight;
+        await sleep(22);
+      }
+      cur.remove();
+    }
+
+    async function run(key) {
+      var c = COMMANDS[key];
+      if (!c) return;
+      if (placeholder) { placeholder.remove(); placeholder = null; }
+      await typeCmd(c.text);
+      await sleep(reduce ? 0 : 260);
+      var resp = document.createElement('div');
+      resp.className = 'resp reveal';
+      resp.innerHTML = c.html;
+      consoleEl.appendChild(resp);
+      consoleEl.scrollTop = consoleEl.scrollHeight;
+    }
+
+    function reset() {
+      consoleEl.innerHTML = '<div class="placeholder" id="placeholder">Sentinel online. Safety Mode: ON (paper). Click a command above, or "Run full demo".</div>';
+      placeholder = document.getElementById('placeholder');
+    }
+
+    document.querySelectorAll('.cmd-chip').forEach(function (chip) {
+      function go() {
+        if (busy) return;
+        busy = true;
+        run(chip.getAttribute('data-cmd')).then(function () { busy = false; });
+      }
+      chip.addEventListener('click', go);
+      chip.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); }
+      });
+    });
+
+    runAllBtn.addEventListener('click', async function () {
+      if (busy) return;
+      busy = true;
+      runAllBtn.disabled = true;
+      reset();
+      for (var i = 0; i < ORDER.length; i++) {
+        await run(ORDER[i]);
+        await sleep(reduce ? 120 : 650);
+      }
+      busy = false;
+      runAllBtn.disabled = false;
+    });
+
+    resetBtn.addEventListener('click', function () { if (!busy) reset(); });
   })();
 </script>

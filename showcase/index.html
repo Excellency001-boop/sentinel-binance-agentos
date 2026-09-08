@@ -337,7 +337,7 @@
   <section>
     <p class="eyebrow">Try it</p>
     <h2 class="sec-title">Run Sentinel right here</h2>
-    <p class="sec-sub">Click a command to see how Sentinel responds. This is a scripted walkthrough of the real flow. In your own Claude session it runs the same way on live Binance data through the Agent OS MCP.</p>
+    <p class="sec-sub">Click a command to see how Sentinel responds. This is a scripted walkthrough of the real decision flow. Connected to live Binance data through the Agent OS MCP.</p>
     <div class="console-wrap">
       <div class="chiprow">
         <button class="run-btn" id="runAll" type="button">&#9654; Run full demo</button>
@@ -359,7 +359,7 @@
   <section>
     <p class="eyebrow">The spine</p>
     <h2 class="sec-title">Every decision walks the same path</h2>
-    <p class="sec-sub">No stage is skippable. The risk gate sits before the proposal, so a reckless idea never reaches you as a suggestion in the first place.</p>
+    <p class="sec-sub">No stage is skippable. The risk gate sits before the proposal, so a trade that breaks your rules is never suggested.</p>
     <div class="panel">
       <div class="spine">
         <div class="step"><div class="n">01</div><div class="t">Scan</div><div class="d">Rank the watchlist live</div></div>
@@ -378,7 +378,7 @@
       <div>
         <p class="eyebrow">Opportunity score</p>
         <h2 class="sec-title">A number you can audit</h2>
-        <p class="sec-sub">Sentinel never outputs a score without the breakdown. Here is the live read on SOL. A high score authorizes consideration. The gates authorize action. The two are deliberately separate.</p>
+        <p class="sec-sub">Every score shows its full breakdown. A high score flags a setup worth considering. Whether it can be traded is a separate decision, made by the risk gates.</p>
         <div class="score-total">
           <span class="big tnum">83<span style="font-size:0.9rem;color:var(--muted-2)">/100</span></span>
           <span class="lab">HIGH CONVICTION &middot; 80-100 band</span>
@@ -417,7 +417,7 @@
 
   <section>
     <p class="eyebrow">The moment that matters</p>
-    <h2 class="sec-title">It will say no to you</h2>
+    <h2 class="sec-title">It refuses reckless trades</h2>
     <p class="sec-sub">Ask for something reckless and Sentinel refuses before it proposes, names the gate that failed, and gives you the largest size that would pass every check. A clear no, and a usable yes, in the same answer.</p>
     <div class="panel">
       <div class="ticket-body">
@@ -483,28 +483,26 @@
       <div class="panel scard">
         <div class="sn">STEP 01</div>
         <h4>Connect the MCP</h4>
-        <p>Point your agent at the official Agent OS endpoint and authorize the sub-account.</p>
-        <div class="codeblock"><span class="c"># Claude Code</span>
-claude mcp add \
-  --transport http \
-  binance-agentos \
-  https://agent.binance.com/mcp/agentic</div>
+        <p>Add the Agent OS server to your agent client and authorize the sub-account.</p>
+        <div class="codeblock"><span class="c"># Agent OS MCP server</span>
+transport   http
+url         https://agent.binance.com/mcp/agentic</div>
       </div>
       <div class="panel scard">
         <div class="sn">STEP 02</div>
-        <h4>Load the brain</h4>
-        <p>Paste the contents of <span class="kbd">AGENT.md</span> into your system prompt. That single file is the whole agent.</p>
+        <h4>Load the agent</h4>
+        <p>Load <span class="kbd">AGENT.md</span> as the system prompt. That single file is the whole agent.</p>
       </div>
       <div class="panel scard">
         <div class="sn">STEP 03</div>
-        <h4>Go</h4>
-        <p>Open a chat and type <span class="kbd">scan market</span>. Safety Mode is on. It reads everything, trades nothing, until you decide otherwise.</p>
+        <h4>Run it</h4>
+        <p>Type <span class="kbd">scan market</span>. Safety Mode is on by default, so it reads live data and trades only on your confirmation.</p>
       </div>
     </div>
   </section>
 
   <footer>
-    <p class="disc"><b>On the figures above.</b> The SOL proposal, scores, and gate readings are a worked reference sample so you can see the output shape. At runtime every value streams live from the Binance Agent OS MCP against your own agentic sub-account. Nothing here is pre-baked into the agent.</p>
+    <p class="disc"><b>On the figures above.</b> The SOL proposal, scores, and gate readings on this page are a reference sample. At runtime every value is pulled live from the Binance Agent OS MCP.</p>
     <p class="disc" style="margin-top:14px"><b>Risk disclaimer.</b> Sentinel is a decision-support tool, not a licensed financial adviser. Crypto trading carries substantial risk of loss. Nothing Sentinel outputs is financial advice. You are responsible for every order you confirm. Safety Mode exists so you can prove the agent's judgment on paper before a single dollar is at risk.</p>
     <div class="foot-row">
       <span class="b">SENTINEL</span>
